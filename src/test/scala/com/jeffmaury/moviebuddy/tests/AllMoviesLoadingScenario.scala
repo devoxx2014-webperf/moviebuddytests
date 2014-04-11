@@ -13,8 +13,8 @@ import assertions._
 class AllMoviesLoadingScenario extends Simulation {
   val server = System.getProperty("buddyserver", "http://localhost:8080");
   val totalUsers = toInt(System.getProperty("gatling.users", "100"));
-  val loops = toInt(System.getProperty("gatling.loops", "200"));
-  val scn = scenario("Loading all movies").repeat(loops) {
+  val loops = toInt(System.getProperty("gatling.loops", "2000"));
+  val scn = scenario("Loading all movies (" + totalUsers + " users/" + loops + " loops)").repeat(loops) {
     exec(
       http("Loading all movies")
         .get(server + "/movies")
