@@ -9,9 +9,12 @@ import scala.concurrent.duration._
 import bootstrap._
 import assertions._
 
+
 class AllMoviesLoadingScenario extends Simulation {
   val server = System.getProperty("buddyserver", "http://localhost:8080");
-  val scn = scenario("Loading all movies").repeat(50) {
+  val totalUsers = toInt(System.getProperty("gatling.users", "100"));
+  val loops = toInt(System.getProperty("gatling.loops", "200"));
+  val scn = scenario("Loading all movies").repeat(loops) {
     exec(
       http("Loading all movies")
         .get(server + "/movies")
@@ -19,6 +22,6 @@ class AllMoviesLoadingScenario extends Simulation {
   }
 
   setUp(scn
-    .inject(ramp(10 users) over (10 seconds)))
+    .inject(ramp(totalUsers users) over (totalUsers seconds)))
 }
 
