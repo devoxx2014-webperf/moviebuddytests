@@ -11,6 +11,7 @@ class AllMoviesLoadingScenario extends Simulation {
   val server = System.getProperty("buddyserver", "http://localhost:8080")
   val totalUsers = Integer.getInteger("gatling.users", 100).toInt
   val loops = Integer.getInteger("gatling.loops", 1000).toInt
+  val protocol = http.disableCaching
   val scn = scenario(s"Loading all movies ($totalUsers users/$loops loops)")
     .repeat(loops) {
       exec(
@@ -20,5 +21,5 @@ class AllMoviesLoadingScenario extends Simulation {
     }
 
   setUp(scn
-    .inject(rampUsers(totalUsers) over (totalUsers seconds)))
+    .inject(rampUsers(totalUsers) over (totalUsers seconds)).protocols(protocol))
 }
