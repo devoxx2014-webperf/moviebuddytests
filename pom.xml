@@ -8,27 +8,27 @@
 
 	<repositories>
 		<repository>
-			<id>excilys</id>
-			<name>Excilys Repository</name>
-			<url>http://repository.excilys.com/content/groups/public</url>
+			<id>sonatype-snapshot</id>
+			<name>Sonatype Snapshot</name>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
 			<releases>
-				<updatePolicy>never</updatePolicy>
+				<enabled>false</enabled>
 			</releases>
 			<snapshots>
-				<enabled>false</enabled>
+				<enabled>true</enabled>
 			</snapshots>
 		</repository>
 	</repositories>
 	<pluginRepositories>
 		<pluginRepository>
-			<id>excilys</id>
-			<name>Excilys Repository</name>
-			<url>http://repository.excilys.com/content/groups/public</url>
+			<id>sonatype-snapshot</id>
+			<name>Sonatype Snapshot</name>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
 			<releases>
-				<updatePolicy>never</updatePolicy>
+				<enabled>false</enabled>
 			</releases>
 			<snapshots>
-				<enabled>false</enabled>
+				<enabled>true</enabled>
 			</snapshots>
 		</pluginRepository>
 	</pluginRepositories>
@@ -36,13 +36,13 @@
 	<properties>
 		<maven.compiler.source>1.6</maven.compiler.source>
 		<maven.compiler.target>1.6</maven.compiler.target>
-		<scala.version>2.10.2</scala.version>
+		<scala.version>2.10.4</scala.version>
 		<encoding>UTF-8</encoding>
 
-		<gatling.version>2.0.0-M3a</gatling.version>
-		<gatling-highcharts.version>2.0.0-M3a</gatling-highcharts.version>
+		<gatling.version>2.0.0-SNAPSHOT</gatling.version>
+		<gatling-highcharts.version>2.0.0-SNAPSHOT</gatling-highcharts.version>
 
-		<scala-maven-plugin.version>3.1.5</scala-maven-plugin.version>
+		<scala-maven-plugin.version>3.1.6</scala-maven-plugin.version>
 	</properties>
 
 	<dependencyManagement>
