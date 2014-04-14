@@ -4,7 +4,7 @@ import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 import io.gatling.http.HeaderNames._
 import scala.concurrent.duration._
-import scala.util.Random
+import scala.concurrent.forkjoin.ThreadLocalRandom
 
 class VoteScenario extends Simulation {
   val server = System.getProperty("buddyserver", "http://localhost:8080")
@@ -20,7 +20,7 @@ class VoteScenario extends Simulation {
    * Liste of 10 movies id being voted to randomly generated as code time
    */
   val movies = Array(593, 264, 582, 564, 724, 403, 653, 334, 287, 771)
-  val rnd = new Random
+  def rnd = ThreadLocalRandom.current
   
   def incrementLoop(session:Session, name:String):Session = {
     if (session.contains(name)) {
