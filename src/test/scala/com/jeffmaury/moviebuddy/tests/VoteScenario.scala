@@ -39,7 +39,7 @@ class VoteScenario extends Simulation {
       exec(
         http("Vote")
           .post(session => server + "/rates")
-          .body(StringBody("""{"userId":"${userid}","movieId":"${movieid}","rate":"${rate}"}"""))
+          .body(StringBody("{\"userId\":${userid},\"movieId\":${movieid},\"rate\":${rate}}"))
           .asJSON
           .check(status.is(301)))
     }
