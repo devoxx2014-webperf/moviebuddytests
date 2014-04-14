@@ -54,7 +54,7 @@ class VoteScenario extends Simulation {
       exec(incrementCounter("movieindex")).
       exec(
         http("Vote")
-          .post(session => server + "/rates")
+          .post(server + "/rates")
           .body(StringBody(voteBody))
           .asJSON
           .check(status.is(301)))
