@@ -29,6 +29,15 @@ class VoteScenario extends Simulation {
     .map(value => session.set(name, value + 1))
     .recover(session.set(name, 0))
 
+  val voteBody: Expression[String] = session =>
+  	for {
+  		userindex <- session("userindex").validate[Int]
+  		movieindex <- session("movieindex").validate[Int]
+  		userid = users(userindex % users.length)
+  		movieid = movies(movieindex % users.length)
+  		rate = rnd.nextInt(11)
+  	} yield s"""{"userId":$userid,"movieId":$movieid,"rate":$rate}"""
+    
   val scn = scenario(s"Vote ($totalUsers users/$loops loops)")
     .repeat(loops) {
       exec(incrementCounter("genreindex")).
@@ -42,14 +51,11 @@ class VoteScenario extends Simulation {
           .get(session => session("genreindex").validate[Int].map(i => s"$server/movies/search/genre/${i % genres.length}/10"))
           .check(status.is(200))).
       exec(incrementCounter("userindex")).
-      exec(session => session.set("userid", users(session("userindex").as[Int] % users.length))).
       exec(incrementCounter("movieindex")).
-      exec(session => session.set("movieid", movies(session("movieindex").as[Int] % movies.length))).
-      exec(session => session.set("rate", rnd.nextInt(11))).
       exec(
         http("Vote")
           .post(session => server + "/rates")
-          .body(StringBody("{\"userId\":${userid},\"movieId\":${movieid},\"rate\":${rate}}"))
+          .body(StringBody(voteBody))
           .asJSON
           .check(status.is(301)))
     }
