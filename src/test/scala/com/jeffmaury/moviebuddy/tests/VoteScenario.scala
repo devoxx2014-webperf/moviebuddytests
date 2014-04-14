@@ -34,12 +34,12 @@ class VoteScenario extends Simulation {
       exec(incrementCounter("genreindex")).
       exec(
         http("Search Movies by genre (1)")
-          .get(session => server + "/movies/search/genre/" + genres(session("genreindex").as[Int] % genres.length) + "/10")
+          .get(session => session("genreindex").validate[Int].map(i => s"$server/movies/search/genre/${i % genres.length}/10"))
           .check(status.is(200))).
       exec(incrementCounter("genreindex")).
       exec(
         http("Search Movies by genre (2)")
-          .get(session => server + "/movies/search/genre/" + genres(session("genreindex").as[Int] % genres.length) + "/10")
+          .get(session => session("genreindex").validate[Int].map(i => s"$server/movies/search/genre/${i % genres.length}/10"))
           .check(status.is(200))).
       exec(incrementCounter("userindex")).
       exec(session => session.set("userid", users(session("userindex").as[Int] % users.length))).
