@@ -5,6 +5,7 @@ import io.gatling.http.Predef._
 import io.gatling.http.HeaderNames._
 import scala.concurrent.duration._
 import scala.concurrent.forkjoin.ThreadLocalRandom
+import io.gatling.core.session.Expression
 
 class VoteScenario extends Simulation {
   val server = System.getProperty("buddyserver", "http://localhost:8080")
@@ -22,28 +23,27 @@ class VoteScenario extends Simulation {
   val movies = Array(593, 264, 582, 564, 724, 403, 653, 334, 287, 771)
   def rnd = ThreadLocalRandom.current
   
-  def incrementLoop(session:Session, name:String):Session = {
-    if (session.contains(name)) {
-      session.set(name, session(name).as[Int] + 1)
-    } else {
-      session.set(name, 0);
-    }
-  }
+  def incrementCounter(name:String): Expression[Session] = session =>
+    session(name)
+    .validate[Int]
+    .map(value => session.set(name, value + 1))
+    .recover(session.set(name, 0))
+
   val scn = scenario(s"Vote ($totalUsers users/$loops loops)")
     .repeat(loops) {
-      exec(session => incrementLoop(session, "genreindex")).
+      exec(incrementCounter("genreindex")).
       exec(
         http("Search Movies by genre (1)")
           .get(session => server + "/movies/search/genre/" + genres(session("genreindex").as[Int] % genres.length) + "/10")
           .check(status.is(200))).
-      exec(session => incrementLoop(session, "genreindex")).
+      exec(incrementCounter("genreindex")).
       exec(
         http("Search Movies by genre (2)")
           .get(session => server + "/movies/search/genre/" + genres(session("genreindex").as[Int] % genres.length) + "/10")
           .check(status.is(200))).
-      exec(session => incrementLoop(session, "userindex")).
+      exec(incrementCounter("userindex")).
       exec(session => session.set("userid", users(session("userindex").as[Int] % users.length))).
-      exec(session => incrementLoop(session, "movieindex")).
+      exec(incrementCounter("movieindex")).
       exec(session => session.set("movieid", movies(session("movieindex").as[Int] % movies.length))).
       exec(session => session.set("rate", rnd.nextInt(11))).
       exec(
