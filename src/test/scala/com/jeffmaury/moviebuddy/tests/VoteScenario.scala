@@ -21,25 +21,35 @@ class VoteScenario extends Simulation {
    */
   val movies = Array(593, 264, 582, 564, 724, 403, 653, 334, 287, 771)
   val rnd = new Random
+  
+  def incrementLoop(session:Session, name:String):Session = {
+    if (session.contains(name)) {
+      session.set(name, session(name).as[Int] + 1)
+    } else {
+      session.set(name, 0);
+    }
+  }
   val scn = scenario(s"Vote ($totalUsers users/$loops loops)")
     .repeat(loops) {
-      exec(session => session.set("random", rnd.nextInt(genres.length))).
+      exec(session => incrementLoop(session, "genreindex")).
       exec(
         http("Search Movies by genre (1)")
-          .get(session => server + "/movies/search/genre/" + genres(session("random").as[Int]) + "/10")
+          .get(session => server + "/movies/search/genre/" + genres(session("genreindex").as[Int] % genres.length) + "/10")
           .check(status.is(200))).
-      exec(session => session.set("random", rnd.nextInt(genres.length))).
+      exec(session => incrementLoop(session, "genreindex")).
       exec(
         http("Search Movies by genre (2)")
-          .get(session => server + "/movies/search/genre/" + genres(session("random").as[Int]) + "/10")
+          .get(session => server + "/movies/search/genre/" + genres(session("genreindex").as[Int] % genres.length) + "/10")
           .check(status.is(200))).
-      exec(session => session.set("userid", users(rnd.nextInt(users.length)))).
-      exec(session => session.set("movieid", movies(rnd.nextInt(movies.length)))).
+      exec(session => incrementLoop(session, "userindex")).
+      exec(session => session.set("userid", users(session("userindex").as[Int] % users.length))).
+      exec(session => incrementLoop(session, "movieindex")).
+      exec(session => session.set("movieid", movies(session("movieindex").as[Int] % movies.length))).
       exec(session => session.set("rate", rnd.nextInt(11))).
       exec(
         http("Vote")
           .post(session => server + "/rates")
-          .body(StringBody("""{"userId":"${userid}","movieId":"${movieid}","rate":"${rate}"}"""))
+          .body(StringBody("{\"userId\":${userid},\"movieId\":${movieid},\"rate\":${rate}}"))
           .asJSON
           .check(status.is(301)))
     }
