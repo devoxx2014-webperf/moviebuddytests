@@ -16,11 +16,11 @@ class DistanceScenario extends Simulation {
     .repeat(loops) {
       exec(
         http("Distance 3022 <-> 9649")
-          .get(server + "/rates/distance/3022/9649")
+          .get(server + "/users/distance/3022/9649")
           .check(status.is(200))).
       exec(
         http("Distance 2349 <-> 496")
-          .get(server + "/rates/distance/2349/496")
+          .get(server + "/users/distance/2349/496")
           .check(status.is(200)))
     }
 
